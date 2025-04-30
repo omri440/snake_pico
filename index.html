@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake Game</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+    }
+    canvas {
+      background-color: #222;
+      margin-top: 20px;
+      border: 2px solid lime;
+    }
+    #score {
+      margin-top: 10px;
+      font-size: 1.2em;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 15px;
+      background: limegreen;
+      border: none;
+      font-size: 1em;
+      color: black;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Snake Game 🐍</h1>
+  <canvas id="gameCanvas" width="300" height="300"></canvas>
+  <div id="score">Score: 0</div>
+  <div><button onclick="resetGame()">Restart Game</button></div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const gridSize = 10;
+    const cellSize = canvas.width / gridSize;
+    const scoreEl = document.getElementById("score");
+
+    const ws = new WebSocket("ws://" + location.host + "/snake");
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      drawGame(data.snake, data.food);
+      scoreEl.textContent = "Score: " + data.score;
+
+      if (data.game_over) {
+        ctx.fillStyle = "red";
+        ctx.font = "20px sans-serif";
+        ctx.fillText("Game Over", 90, 150);
+      }
+    };
+
+    function drawGame(snake, food) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // draw snake
+      ctx.fillStyle = "lime";
+      for (let part of snake) {
+        ctx.fillRect(part[0] * cellSize, part[1] * cellSize, cellSize, cellSize);
+      }
+
+      // draw food
+      ctx.fillStyle = "red";
+      ctx.fillRect(food[0] * cellSize, food[1] * cellSize, cellSize, cellSize);
+    }
+
+    function resetGame() {
+      ws.send("reset");
+    }
+  </script>
+</body>
+</html>
