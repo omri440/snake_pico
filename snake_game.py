@@ -11,8 +11,8 @@ from machine import Pin
 btn_left = Pin(14, Pin.IN, Pin.PULL_UP)
 btn_right = Pin(15, Pin.IN, Pin.PULL_UP)
 
-ssid = 'Dorit 2.4'
-password = '0546662505'
+ssid = 'wifi-name'
+password = 'password'
 
 def connect_to_wifi():
     wlan = network.WLAN(network.STA_IF)
